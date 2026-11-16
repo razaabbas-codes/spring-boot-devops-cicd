@@ -6,7 +6,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -27,9 +26,22 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build and Push') {
             steps {
-                sh 'docker build -t task-manager-api:latest .'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USERNAME',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                        docker build -t raza0111/task-manager-api:${BUILD_NUMBER} .
+                        docker tag raza0111/task-manager-api:${BUILD_NUMBER} raza0111/task-manager-api:latest
+                        docker push raza0111/task-manager-api:${BUILD_NUMBER}
+                        docker push raza0111/task-manager-api:latest
+                        docker logout
+                    '''
+                }
             }
         }
     }
@@ -38,11 +50,9 @@ pipeline {
         always {
             junit 'target/surefire-reports/*.xml'
         }
-
         success {
             echo 'CI Pipeline completed successfully!'
         }
-
         failure {
             echo 'CI Pipeline failed. Check the logs.'
         }
