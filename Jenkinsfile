@@ -26,6 +26,18 @@ pipeline {
             }
         }
 
+	stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            sh '''
+                ./mvnw sonar:sonar \
+                -Dsonar.projectKey=task-manager-api \
+                -Dsonar.projectName="Task Manager API"
+            '''
+        }
+    }
+}
+
         stage('Docker Build and Push') {
             steps {
                 withCredentials([usernamePassword(
