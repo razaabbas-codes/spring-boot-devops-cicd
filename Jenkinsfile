@@ -27,21 +27,19 @@ pipeline {
         }
 
 	stage('SonarQube Analysis') {
-    steps {
+         steps {
         withSonarQubeEnv('SonarQube') {
             sh '''
-                ./mvnw sonar:sonar \
+                ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276:sonar \
                 -Dsonar.projectKey=task-manager-api \
                 -Dsonar.projectName="Task Manager API"
             '''
         }
     }
 }
-
         stage('Docker Build and Push') {
             steps {
-                withCredentials([usernamePassword(
-                   credentialsId: 'b8a6d383-c509-45ca-9369-4a9eda586369',
+                withCredentials([usernamePassword(                   credentialsId: 'b8a6d383-c509-45ca-9369-4a9eda586369',
                     usernameVariable: 'DOCKERHUB_USERNAME',
                     passwordVariable: 'DOCKERHUB_TOKEN'
                 )]) {
