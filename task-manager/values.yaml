@@ -1,0 +1,46 @@
+replicaCount: 1
+
+image:
+  repository: raza0111/task-manager-api
+  pullPolicy: Always
+  tag: "latest"
+
+serviceAccount:
+  create: true
+  automount: true
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 31923
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: http
+  initialDelaySeconds: 40
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health/readiness
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+autoscaling:
+  enabled: false
+ingress:
+  enabled: false
+
+httpRoute:
+  enabled: false
