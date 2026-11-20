@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: raza0111/task-manager-api
   pullPolicy: Always
-  tag: "latest"
+  tag: "11"
 
 serviceAccount:
   create: true
