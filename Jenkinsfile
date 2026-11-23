@@ -72,13 +72,22 @@ pipeline {
                         git config user.name "$GITHUB_USERNAME"
                         git config user.email "$GITHUB_USERNAME@users.noreply.github.com"
 
-                        sed -i "s/tag: \\"latest\\"/tag: \\"${BUILD_NUMBER}\\"/" task-manager/values.yaml
+                        echo "Updating Helm image tag to ${BUILD_NUMBER}"
+
+                        sed -i "s/tag: \\"[^\\"]*\\"/tag: \\"${BUILD_NUMBER}\\"/" task-manager/values.yaml
+
+                        echo "Updated values.yaml:"
+                        cat task-manager/values.yaml
 
                         git add task-manager/values.yaml
 
-                        git commit -m "Update image tag to ${BUILD_NUMBER}"
+                        if git diff --cached --quiet; then
+                            echo "No changes to commit."
+                        else
+                            git commit -m "Update image tag to ${BUILD_NUMBER}"
 
-                        git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/razaabbas-codes/spring-boot-devops-cicd.git HEAD:main
+                            git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/razaabbas-codes/spring-boot-devops-cicd.git HEAD:main
+                        fi
                     '''
                 }
             }
