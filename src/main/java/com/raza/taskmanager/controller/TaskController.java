@@ -51,4 +51,10 @@ public class TaskController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+
+    // New endpoint to verify CI/CD deployment
+    @GetMapping("/version")
+    public String getVersion() {
+        return "Task Manager API - Version 2.0 - CI/CD Deployment Successful!";
+    }
 }
